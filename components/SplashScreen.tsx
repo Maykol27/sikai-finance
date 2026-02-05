@@ -125,7 +125,7 @@ export function SplashScreen({ onFinish }: { onFinish?: () => void }) {
                     {/* Logo Image */}
                     <div className="relative z-20 flex items-center justify-center animate-in zoom-in-0 duration-1000 ease-out">
                         <img
-                            src="/sikai-logo.png"
+                            src="/favicon.ico"
                             alt="SIKAI"
                             className="w-48 h-48 md:w-64 md:h-64 object-contain drop-shadow-[0_0_35px_rgba(26,136,255,0.6)] animate-[float_6s_ease-in-out_infinite]"
                         />
