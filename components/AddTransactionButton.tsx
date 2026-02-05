@@ -69,7 +69,7 @@ export default function AddTransactionButton({ userId }: { userId: string }) {
                         style={{ animationDelay: `${index * 50}ms` }}
                     >
                         {/* Label */}
-                        <span className="bg-foreground/90 text-background px-3 py-1.5 rounded-lg text-sm font-medium shadow-lg whitespace-nowrap">
+                        <span className="bg-white text-gray-900 px-3 py-1.5 rounded-lg text-sm font-semibold shadow-xl whitespace-nowrap border border-gray-200">
                             {item.label}
                         </span>
                         {/* Icon Button */}
