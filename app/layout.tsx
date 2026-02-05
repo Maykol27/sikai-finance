@@ -23,6 +23,11 @@ export const metadata: Metadata = {
   title: "Sikai Finance",
   description: "Gestión financiera inteligente",
   manifest: "/manifest.json",
+  icons: {
+    icon: "/favicon.ico",
+    shortcut: "/favicon.ico",
+    apple: "/apple-touch-icon.png",
+  },
 };
 
 export default function RootLayout({
