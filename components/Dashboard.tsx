@@ -228,7 +228,7 @@ export default function Dashboard({ userId }: { userId: string }) {
 
                         {/* User Profile / Menu */}
                         <div className="relative group">
-                            <button className="h-9 w-9 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 border border-white/20 flex items-center justify-center text-white text-xs font-bold hover:scale-105 transition-transform shadow-lg shadow-indigo-500/20">
+                            <button className="h-9 w-9 rounded-full bg-gradient-to-br from-primary to-primary-cyan border border-white/20 flex items-center justify-center text-white text-xs font-bold hover:scale-105 transition-transform shadow-lg shadow-primary/30">
                                 {userInitials}
                             </button>
 
