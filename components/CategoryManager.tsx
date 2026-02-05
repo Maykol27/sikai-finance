@@ -173,8 +173,8 @@ export default function CategoryManager({ userId, isOpen, onClose }: { userId: s
                                     onChange={(e) => setRootType(e.target.value as any)}
                                     className="bg-white/5 text-white text-xs py-2.5 px-3 border-r border-white/10 outline-none"
                                 >
-                                    <option value="income"> Ingreso</option>
-                                    <option value="expense"> Gasto</option>
+                                    <option value="income" className="text-black"> Ingreso</option>
+                                    <option value="expense" className="text-black"> Gasto</option>
                                 </select>
                                 <input
                                     value={newRootName}
