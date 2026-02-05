@@ -188,12 +188,12 @@ export default function CategoryManager({ userId, isOpen, onClose }: { userId: s
             <div className="glass-card w-full max-w-lg p-0 relative animate-in fade-in zoom-in duration-300 border-glow flex flex-col max-h-[85vh] rounded-2xl overflow-hidden shadow-2xl">
 
                 {/* Header */}
-                <div className="p-6 border-b border-white/10 bg-black/40">
+                <div className="p-6 border-b border-[var(--glass-border)] bg-[var(--glass-bg)]">
                     <div className="flex justify-between items-center mb-4">
-                        <h2 className="text-xl font-headline font-bold text-white flex items-center gap-2">
+                        <h2 className="text-xl font-headline font-bold text-foreground flex items-center gap-2">
                             <Folder className="text-primary-cyan" /> Gestión de Categorías
                         </h2>
-                        <button onClick={onClose} className="p-2 hover:bg-white/10 rounded-full text-muted-foreground hover:text-white transition">
+                        <button onClick={onClose} className="p-2 hover:bg-foreground/10 rounded-full text-muted-foreground hover:text-foreground transition">
                             <X size={20} />
                         </button>
                     </div>
@@ -211,11 +211,11 @@ export default function CategoryManager({ userId, isOpen, onClose }: { userId: s
                     <div className="flex flex-col gap-3">
                         <label className="text-xs font-bold text-muted-foreground uppercase tracking-wide">Nueva Categoría Principal</label>
                         <div className="flex gap-2">
-                            <div className="flex items-center bg-black/40 border border-white/10 rounded-lg overflow-hidden focus-within:border-primary-cyan transition-colors flex-1">
+                            <div className="flex items-center bg-background/60 border border-[var(--glass-border)] rounded-lg overflow-hidden focus-within:border-primary-cyan transition-colors flex-1">
                                 <select
                                     value={rootType}
                                     onChange={(e) => setRootType(e.target.value as any)}
-                                    className="bg-white/5 text-white text-xs py-2.5 px-3 border-r border-white/10 outline-none"
+                                    className="bg-foreground/5 text-foreground text-xs py-2.5 px-3 border-r border-[var(--glass-border)] outline-none"
                                 >
                                     <option value="income" className="text-black"> Ingreso</option>
                                     <option value="expense" className="text-black"> Gasto</option>
@@ -225,7 +225,7 @@ export default function CategoryManager({ userId, isOpen, onClose }: { userId: s
                                     onChange={e => setNewRootName(e.target.value)}
                                     onKeyDown={e => e.key === 'Enter' && handleAddRoot()}
                                     placeholder="Nombre..."
-                                    className="bg-transparent px-3 py-2 text-sm w-full outline-none text-white placeholder:text-muted-foreground"
+                                    className="bg-transparent px-3 py-2 text-sm w-full outline-none text-foreground placeholder:text-muted-foreground"
                                 />
                             </div>
                             <button
@@ -240,7 +240,7 @@ export default function CategoryManager({ userId, isOpen, onClose }: { userId: s
                 </div>
 
                 {/* List */}
-                <div className="flex-1 overflow-y-auto p-4 custom-scrollbar space-y-3 bg-[#0a0a0a]">
+                <div className="flex-1 overflow-y-auto p-4 custom-scrollbar space-y-3 bg-background">
                     {loading ? (
                         <p className="text-center text-muted-foreground py-10 animate-pulse">Cargando...</p>
                     ) : categories.length === 0 ? (
@@ -300,11 +300,11 @@ export default function CategoryManager({ userId, isOpen, onClose }: { userId: s
 
                                 {/* Subcategories Area */}
                                 {expanded[cat.id] && (
-                                    <div className="ml-4 pl-4 border-l border-white/10 py-2 space-y-2">
+                                    <div className="ml-4 pl-4 border-l border-[var(--glass-border)] py-2 space-y-2">
 
                                         {/* Inline Add Sub Form */}
                                         {addingSubTo === cat.id && (
-                                            <div className="flex items-center gap-2 p-2 bg-white/5 rounded-lg border border-white/20 animate-in slide-in-from-left-2">
+                                            <div className="flex items-center gap-2 p-2 bg-foreground/5 rounded-lg border border-[var(--glass-border)] animate-in slide-in-from-left-2">
                                                 <CornerDownRight size={14} className="text-muted-foreground" />
                                                 <input
                                                     autoFocus
@@ -315,7 +315,7 @@ export default function CategoryManager({ userId, isOpen, onClose }: { userId: s
                                                         if (e.key === 'Escape') setAddingSubTo(null);
                                                     }}
                                                     placeholder="Nombre de subcategoría..."
-                                                    className="bg-transparent text-sm w-full outline-none text-white placeholder:text-muted-foreground/50"
+                                                    className="bg-transparent text-sm w-full outline-none text-foreground placeholder:text-muted-foreground/50"
                                                 />
                                                 <button onClick={() => handleAddSub(cat.id, cat.type)} className="text-primary-cyan hover:text-white"><Plus size={16} /></button>
                                                 <button onClick={() => setAddingSubTo(null)} className="text-red-400 hover:text-white"><X size={16} /></button>
@@ -324,9 +324,9 @@ export default function CategoryManager({ userId, isOpen, onClose }: { userId: s
 
                                         {/* Sub Items */}
                                         {cat.subcategories?.map(sub => (
-                                            <div key={sub.id} className="group/sub flex items-center justify-between p-2 rounded-lg hover:bg-white/5 text-sm transition-colors">
-                                                <div className="flex items-center gap-2 text-muted-foreground group-hover/sub:text-white transition-colors">
-                                                    <div className="w-1.5 h-1.5 rounded-full bg-white/20 group-hover/sub:bg-white/50" />
+                                            <div key={sub.id} className="group/sub flex items-center justify-between p-2 rounded-lg hover:bg-foreground/5 text-sm transition-colors">
+                                                <div className="flex items-center gap-2 text-muted-foreground group-hover/sub:text-foreground transition-colors">
+                                                    <div className="w-1.5 h-1.5 rounded-full bg-foreground/20 group-hover/sub:bg-foreground/50" />
                                                     <span>{sub.name}</span>
                                                 </div>
                                                 <button

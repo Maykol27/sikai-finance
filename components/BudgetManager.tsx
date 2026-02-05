@@ -192,40 +192,40 @@ export default function BudgetManager({ userId, isOpen, onClose, onOpenCategorie
             <div className="glass-card w-full max-w-2xl p-0 relative animate-in fade-in zoom-in duration-300 border-glow h-[90vh] flex flex-col overflow-hidden rounded-2xl">
 
                 {/* Header */}
-                <div className="p-6 border-b border-white/10 bg-black/20">
+                <div className="p-6 border-b border-[var(--glass-border)] bg-[var(--glass-bg)]">
                     <div className="flex justify-between items-center mb-4">
-                        <h2 className="text-xl font-headline font-bold text-white flex items-center gap-2">
+                        <h2 className="text-xl font-headline font-bold text-foreground flex items-center gap-2">
                             <Target className="text-pink-500" />
                             Gestión de Presupuestos
                         </h2>
                         <div className="flex gap-2">
-                            <button onClick={handleExport} className="p-2 bg-white/5 hover:bg-white/10 rounded-full text-muted-foreground hover:text-white transition" title="Exportar">
+                            <button onClick={handleExport} className="p-2 bg-foreground/5 hover:bg-foreground/10 rounded-full text-muted-foreground hover:text-foreground transition" title="Exportar">
                                 <Download size={20} />
                             </button>
-                            <button onClick={onClose} className="p-2 hover:bg-white/10 rounded-full text-muted-foreground hover:text-white transition">
+                            <button onClick={onClose} className="p-2 hover:bg-foreground/10 rounded-full text-muted-foreground hover:text-foreground transition">
                                 <X size={20} />
                             </button>
                         </div>
                     </div>
 
                     {/* Month Navigator */}
-                    <div className={`flex items-center justify-between rounded-xl p-2 border ${isHistoryMode ? 'bg-amber-500/10 border-amber-500/30' : 'bg-white/5 border-white/5'}`}>
-                        <button onClick={() => changeMonth(-1)} className="p-2 hover:bg-white/10 rounded-full text-white"><ChevronLeft /></button>
+                    <div className={`flex items-center justify-between rounded-xl p-2 border ${isHistoryMode ? 'bg-amber-500/10 border-amber-500/30' : 'bg-foreground/5 border-[var(--glass-border)]'}`}>
+                        <button onClick={() => changeMonth(-1)} className="p-2 hover:bg-foreground/10 rounded-full text-foreground"><ChevronLeft /></button>
                         <div className="flex flex-col items-center">
-                            <span className="text-lg font-mono font-bold text-white capitalize flex items-center gap-2">
+                            <span className="text-lg font-mono font-bold text-foreground capitalize flex items-center gap-2">
                                 {isHistoryMode && <History size={16} className="text-amber-500" />}
                                 {currentDate.toLocaleString('es-ES', { month: 'long', year: 'numeric' })}
                             </span>
                             {isHistoryMode && <span className="text-[10px] text-amber-500 uppercase tracking-widest font-bold">Modo Historial</span>}
                         </div>
-                        <button onClick={() => changeMonth(1)} className="p-2 hover:bg-white/10 rounded-full text-white"><ChevronRight /></button>
+                        <button onClick={() => changeMonth(1)} className="p-2 hover:bg-foreground/10 rounded-full text-foreground"><ChevronRight /></button>
                     </div>
                 </div>
 
                 <div className="overflow-y-auto flex-1 p-6 custom-scrollbar space-y-8">
                     {loading ? (
                         <div className="space-y-4">
-                            {[1, 2, 3].map(i => <div key={i} className="h-20 bg-white/5 rounded-xl animate-pulse" />)}
+                            {[1, 2, 3].map(i => <div key={i} className="h-20 bg-foreground/5 rounded-xl animate-pulse" />)}
                         </div>
                     ) : categories.length === 0 ? (
                         <div className="flex flex-col items-center justify-center h-full text-center space-y-4">
@@ -241,7 +241,7 @@ export default function BudgetManager({ userId, isOpen, onClose, onOpenCategorie
                         <>
                             {/* Income Section */}
                             <div className="space-y-4">
-                                <h3 className="text-sm font-bold text-primary-cyan uppercase tracking-wider flex items-center gap-2 sticky top-0 bg-[#1a1a1a] z-10 py-2">
+                                <h3 className="text-sm font-bold text-primary-cyan uppercase tracking-wider flex items-center gap-2 sticky top-0 bg-background z-10 py-2">
                                     <span className="w-2 h-2 rounded-full bg-primary-cyan"></span> Ingresos Esperados
                                 </h3>
                                 {categories.filter(c => c.type === 'income').map(cat => {
@@ -251,13 +251,13 @@ export default function BudgetManager({ userId, isOpen, onClose, onOpenCategorie
                                     const isModified = budget !== (originalBudgets[cat.id] || 0);
 
                                     return (
-                                        <div key={cat.id} className={`bg-white/5 p-4 rounded-xl border transition-all ${isModified ? 'border-primary-cyan/50 bg-primary-cyan/5' : 'border-white/5 hover:border-primary-cyan/30'}`}>
+                                        <div key={cat.id} className={`bg-foreground/5 p-4 rounded-xl border transition-all ${isModified ? 'border-primary-cyan/50 bg-primary-cyan/5' : 'border-[var(--glass-border)] hover:border-primary-cyan/30'}`}>
                                             <div className="flex justify-between items-center mb-2">
-                                                <span className="font-medium text-white">{cat.name}</span>
+                                                <span className="font-medium text-foreground">{cat.name}</span>
                                                 <div className="text-right flex items-center gap-2 justify-end">
                                                     <span className="text-xs text-muted-foreground mr-2">Recibido: ${actual.toLocaleString()}</span>
-                                                    <div className="flex items-center bg-black/40 rounded border border-white/10 focus-within:border-primary-cyan transition-colors">
-                                                        <span className="pl-2 text-white/50 text-sm">$</span>
+                                                    <div className="flex items-center bg-background/60 rounded border border-[var(--glass-border)] focus-within:border-primary-cyan transition-colors">
+                                                        <span className="pl-2 text-muted-foreground text-sm">$</span>
                                                         <input
                                                             type="number"
                                                             value={budgets[cat.id] || ''}
@@ -272,7 +272,7 @@ export default function BudgetManager({ userId, isOpen, onClose, onOpenCategorie
                                                 </div>
                                             </div>
                                             {/* Progress Bar */}
-                                            <div className="h-1.5 bg-black/50 rounded-full overflow-hidden">
+                                            <div className="h-1.5 bg-foreground/10 rounded-full overflow-hidden">
                                                 <div className="h-full bg-primary-cyan transition-all duration-500" style={{ width: `${percent}%` }} />
                                             </div>
                                         </div>
@@ -282,7 +282,7 @@ export default function BudgetManager({ userId, isOpen, onClose, onOpenCategorie
 
                             {/* Expense Section */}
                             <div className="space-y-4">
-                                <h3 className="text-sm font-bold text-pink-500 uppercase tracking-wider flex items-center gap-2 sticky top-0 bg-[#1a1a1a] z-10 py-2">
+                                <h3 className="text-sm font-bold text-pink-500 uppercase tracking-wider flex items-center gap-2 sticky top-0 bg-background z-10 py-2">
                                     <span className="w-2 h-2 rounded-full bg-pink-500"></span> Presupuestos de Gastos
                                 </h3>
                                 {categories.filter(c => c.type === 'expense').map(cat => {
@@ -296,15 +296,15 @@ export default function BudgetManager({ userId, isOpen, onClose, onOpenCategorie
                                     const isModified = budget !== (originalBudgets[cat.id] || 0);
 
                                     return (
-                                        <div key={cat.id} className={`bg-white/5 p-4 rounded-xl border transition-all ${isModified ? 'border-pink-500/50 bg-pink-500/5' : 'border-white/5 hover:border-pink-500/30'}`}>
+                                        <div key={cat.id} className={`bg-foreground/5 p-4 rounded-xl border transition-all ${isModified ? 'border-pink-500/50 bg-pink-500/5' : 'border-[var(--glass-border)] hover:border-pink-500/30'}`}>
                                             <div className="flex justify-between items-center mb-2">
-                                                <span className="font-medium text-white">{cat.name}</span>
+                                                <span className="font-medium text-foreground">{cat.name}</span>
                                                 <div className="text-right flex items-center gap-2 justify-end">
                                                     <span className={`text-xs ${isOverLimit ? 'text-red-500 font-bold' : 'text-muted-foreground'}`}>
                                                         Gastado: ${actual.toLocaleString()}
                                                     </span>
-                                                    <div className="flex items-center bg-black/40 rounded border border-white/10 focus-within:border-pink-500 transition-colors">
-                                                        <span className="pl-2 text-white/50 text-sm">$</span>
+                                                    <div className="flex items-center bg-background/60 rounded border border-[var(--glass-border)] focus-within:border-pink-500 transition-colors">
+                                                        <span className="pl-2 text-muted-foreground text-sm">$</span>
                                                         <input
                                                             type="number"
                                                             value={budgets[cat.id] || ''}
@@ -318,7 +318,7 @@ export default function BudgetManager({ userId, isOpen, onClose, onOpenCategorie
                                                     </div>
                                                 </div>
                                             </div>
-                                            <div className="h-1.5 bg-black/50 rounded-full overflow-hidden relative">
+                                            <div className="h-1.5 bg-foreground/10 rounded-full overflow-hidden relative">
                                                 <div
                                                     className={`h-full transition-all duration-500 ${isOverLimit ? 'bg-red-500 shadow-[0_0_8px_red]' : 'bg-pink-500'}`}
                                                     style={{ width: `${percent}%` }}
@@ -336,7 +336,7 @@ export default function BudgetManager({ userId, isOpen, onClose, onOpenCategorie
                 </div>
 
                 {/* Footer Actions */}
-                <div className="p-4 border-t border-white/10 bg-black/40 backdrop-blur-md flex justify-between items-center">
+                <div className="p-4 border-t border-[var(--glass-border)] bg-[var(--glass-bg)] backdrop-blur-md flex justify-between items-center">
                     <div className="text-sm text-muted-foreground">
                         {modified ?
                             <span className="text-primary-cyan flex items-center gap-2 animate-pulse"><AlertCircle size={14} /> Cambios sin guardar</span>
