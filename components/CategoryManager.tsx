@@ -33,6 +33,16 @@ export default function CategoryManager({ userId, isOpen, onClose }: { userId: s
 
     useEffect(() => {
         if (isOpen) fetchCategories();
+
+        // Realtime subscription
+        const channel = supabase
+            .channel('categories-realtime')
+            .on('postgres_changes', { event: '*', schema: 'public', table: 'categories' }, () => {
+                if (isOpen) fetchCategories();
+            })
+            .subscribe();
+
+        return () => { supabase.removeChannel(channel); };
     }, [isOpen]);
 
     useEffect(() => {

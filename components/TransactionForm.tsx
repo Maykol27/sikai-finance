@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { createClient } from "@/utils/supabase/client";
+import { useToast } from "@/contexts/ToastContext";
 import { X, Check, DollarSign, Tag, ChevronRight } from "lucide-react";
 
 export default function TransactionForm({ onClose, onSuccess, userId }: { onClose: () => void, onSuccess: () => void, userId: string }) {
@@ -16,6 +17,7 @@ export default function TransactionForm({ onClose, onSuccess, userId }: { onClos
 
     const [loading, setLoading] = useState(false);
     const supabase = createClient();
+    const { showToast } = useToast();
 
     useEffect(() => {
         const fetchCats = async () => {
@@ -37,7 +39,7 @@ export default function TransactionForm({ onClose, onSuccess, userId }: { onClos
         const finalCategoryId = selectedSubId || selectedParentId;
 
         if (!finalCategoryId) {
-            alert("Por favor selecciona una categoría.");
+            showToast("Por favor selecciona una categoría.", 'error');
             setLoading(false);
             return;
         }
@@ -51,11 +53,12 @@ export default function TransactionForm({ onClose, onSuccess, userId }: { onClos
         });
 
         if (!error) {
+            showToast("¡Transacción guardada!", 'success');
             onSuccess();
             onClose();
         } else {
             console.error(error);
-            alert("Error al guardar.");
+            showToast("Error al guardar la transacción.", 'error');
         }
         setLoading(false);
     };
@@ -108,7 +111,7 @@ export default function TransactionForm({ onClose, onSuccess, userId }: { onClos
                             <option value="" className="text-black bg-white">-- Seleccionar --</option>
                             {parents.map(c => (
                                 <option key={c.id} value={c.id} className="text-black bg-white">
-                                    {c.name} ({c.type === 'income' ? 'Ingreso' : 'Gasto'})
+                                    {c.name} ({c.type === 'income' ? 'Ingreso' : c.type === 'savings' ? 'Ahorro' : 'Gasto'})
                                 </option>
                             ))}
                         </select>

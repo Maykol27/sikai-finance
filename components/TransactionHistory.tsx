@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { createClient } from "@/utils/supabase/client";
+import { useToast } from "@/contexts/ToastContext";
 import { ArrowDownLeft, ArrowUpRight, Calendar, Search, Trash2, Download } from "lucide-react";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
@@ -25,6 +26,7 @@ export default function TransactionHistory({ userId }: { userId: string }) {
     const [searchQuery, setSearchQuery] = useState('');
 
     const supabase = createClient();
+    const { showToast } = useToast();
 
     const fetchTransactions = async () => {
         setLoading(true);
@@ -54,15 +56,20 @@ export default function TransactionHistory({ userId }: { userId: string }) {
 
     const handleDelete = async (id: string) => {
         if (confirm("¿Eliminar transacción?")) {
-            await supabase.from('transactions').delete().eq('id', id);
-            fetchTransactions();
+            const { error } = await supabase.from('transactions').delete().eq('id', id);
+            if (!error) {
+                showToast("Transacción eliminada", 'success');
+                fetchTransactions();
+            } else {
+                showToast("Error al eliminar", 'error');
+            }
         }
     };
 
     const handleExport = () => {
         const dataToExport = transactions.map(t => ({
             Fecha: t.date,
-            Tipo: t.categories?.type === 'income' ? 'Ingreso' : 'Gasto',
+            Tipo: t.categories?.type === 'income' ? 'Ingreso' : t.categories?.type === 'savings' ? 'Ahorro' : 'Gasto',
             Monto: t.amount,
             Categoría: t.categories?.name,
             Nota: t.note
@@ -72,6 +79,7 @@ export default function TransactionHistory({ userId }: { userId: string }) {
         const wb = XLSX.utils.book_new();
         XLSX.utils.book_append_sheet(wb, ws, "Transacciones");
         XLSX.writeFile(wb, `Sikai_Transacciones_${format(new Date(), 'yyyy-MM-dd')}.xlsx`);
+        showToast("¡Exportado a Excel!", 'success');
     };
 
     useEffect(() => {
