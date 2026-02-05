@@ -8,6 +8,7 @@ import { clsx } from "clsx";
 import CategoryManager from "./CategoryManager";
 import BudgetManager from "./BudgetManager";
 import TransactionHistory from "./TransactionHistory";
+import { SplashScreen } from "./SplashScreen";
 
 export default function Dashboard({ userId }: { userId: string }) {
     const [balance, setBalance] = useState(0);
@@ -108,13 +109,7 @@ export default function Dashboard({ userId }: { userId: string }) {
         window.location.href = '/login';
     };
 
-    if (loading) return (
-        <div className="flex items-center justify-center min-h-screen bg-black text-white">
-            <div className="animate-pulse text-2xl font-bold font-headline tracking-widest uppercase">
-                Cargando Sikai...
-            </div>
-        </div>
-    );
+    if (loading) return <SplashScreen />;
 
     return (
         <div className="min-h-screen bg-black bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-gray-900 via-black to-black pb-24 md:pb-10">
