@@ -138,25 +138,45 @@ export default function CategoryManager({ userId, isOpen, onClose }: { userId: s
 
     const handleSeed = async () => {
         setLoading(true);
-        const defaults = [
-            { name: 'Sueldo', type: 'income' },
-            { name: 'Freelance', type: 'income' },
-            { name: 'Vivienda', type: 'expense' },
-            { name: 'Comida', type: 'expense' },
-            { name: 'Transporte', type: 'expense' },
-            { name: 'Entretenimiento', type: 'expense' },
-            { name: 'Servicios', type: 'expense' }
+
+        // Define categories with their subcategories
+        const seedData = [
+            { name: 'Sueldo', type: 'income', subs: ['Salario Base', 'Bonos', 'Comisiones'] },
+            { name: 'Freelance', type: 'income', subs: ['Proyectos', 'Consultorías'] },
+            { name: 'Vivienda', type: 'expense', subs: ['Arriendo/Hipoteca', 'Mantenimiento', 'Seguros'] },
+            { name: 'Comida', type: 'expense', subs: ['Supermercado', 'Restaurantes', 'Delivery'] },
+            { name: 'Transporte', type: 'expense', subs: ['Gasolina', 'Transporte Público', 'Mantenimiento Vehículo'] },
+            { name: 'Entretenimiento', type: 'expense', subs: ['Streaming', 'Salidas', 'Hobbies'] },
+            { name: 'Servicios', type: 'expense', subs: ['Electricidad', 'Agua', 'Internet/Teléfono'] }
         ];
 
-        const promises = defaults.map(d => supabase.from('categories').insert({
-            user_id: userId,
-            name: d.name,
-            type: d.type,
-            parent_id: null
-        }));
+        // Insert parent categories and get their IDs
+        for (const cat of seedData) {
+            const { data: parentData, error: parentError } = await supabase
+                .from('categories')
+                .insert({
+                    user_id: userId,
+                    name: cat.name,
+                    type: cat.type,
+                    parent_id: null
+                })
+                .select('id')
+                .single();
 
-        await Promise.all(promises);
-        showNotify("¡Categorías sugeridas creadas!", 'success');
+            if (parentError || !parentData) continue;
+
+            // Insert subcategories
+            const subInserts = cat.subs.map(subName => ({
+                user_id: userId,
+                name: subName,
+                type: cat.type,
+                parent_id: parentData.id
+            }));
+
+            await supabase.from('categories').insert(subInserts);
+        }
+
+        showNotify("¡Categorías y subcategorías creadas!", 'success');
         fetchCategories();
     };
 
