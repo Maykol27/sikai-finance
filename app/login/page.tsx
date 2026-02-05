@@ -84,7 +84,7 @@ export default function LoginPage() {
                         {isRegistering ? "Crear Cuenta SIKAI" : "Bienvenido a SIKAI"}
                     </h1>
                     <p className="text-gray-400 text-sm">
-                        {isRegistering ? "Comienza a gestionar tus finanzas hoy" : "Inicia sesión para gestionar tus facturas"}
+                        {isRegistering ? "Comienza a gestionar tus finanzas hoy" : "Inicia sesión para gestionar tus finanzas"}
                     </p>
                 </div>
 
