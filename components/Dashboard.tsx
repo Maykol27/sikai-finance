@@ -121,7 +121,7 @@ export default function Dashboard({ userId }: { userId: string }) {
                 <div className="max-w-7xl mx-auto px-4 md:px-8 h-16 flex items-center justify-between">
                     <div className="flex items-center gap-2">
                         <Wallet className="text-primary h-8 w-8" />
-                        <h1 className="text-2xl font-bold font-headline tracking-tight text-foreground hidden md:block">
+                        <h1 className="text-xl md:text-2xl font-bold font-headline tracking-tight text-foreground">
                             SIKAI <span className="text-primary">FINANCE</span>
                         </h1>
                     </div>
@@ -188,7 +188,7 @@ export default function Dashboard({ userId }: { userId: string }) {
                                 <span className="w-2 h-2 rounded-full bg-primary-cyan animate-pulse"></span>
                                 Saldo Disponible
                             </h3>
-                            <p className="text-5xl font-bold font-mono text-white text-glow tracking-tighter">
+                            <p className="text-5xl font-bold font-mono text-foreground tracking-tighter">
                                 {loading ? "..." : `$ ${balance.toLocaleString()}`}
                             </p>
                         </div>
@@ -199,7 +199,7 @@ export default function Dashboard({ userId }: { userId: string }) {
                         <p className="text-muted-foreground text-sm flex items-center gap-2 mb-1">
                             <ArrowUpRight size={16} className="text-primary-cyan" /> Ingresos
                         </p>
-                        <p className="text-3xl font-bold font-mono text-white neon-text-cyan">
+                        <p className="text-3xl font-bold font-mono text-primary-cyan">
                             $ {income.toLocaleString()}
                         </p>
                         <div className="w-full bg-muted/50 h-1 mt-4 rounded-full overflow-hidden">
@@ -215,7 +215,7 @@ export default function Dashboard({ userId }: { userId: string }) {
                         <p className="text-muted-foreground text-sm flex items-center gap-2 mb-1">
                             <ArrowDownRight size={16} className="text-pink-500" /> Gastos
                         </p>
-                        <p className="text-3xl font-bold font-mono text-white" style={{ textShadow: "0 0 10px rgba(236, 72, 153, 0.5)" }}>
+                        <p className="text-3xl font-bold font-mono text-pink-500">
                             $ {expense.toLocaleString()}
                         </p>
                         <div className="w-full bg-muted/50 h-1 mt-4 rounded-full overflow-hidden">
