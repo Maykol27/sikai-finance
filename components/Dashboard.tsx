@@ -1,7 +1,7 @@
 "use client";
 
 import { PieChart, Pie, Cell, ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip, CartesianGrid } from "recharts";
-import { ArrowUpRight, ArrowDownRight, Wallet, Target, Layers, Calendar } from "lucide-react";
+import { ArrowUpRight, ArrowDownRight, Wallet, Target, Layers, Calendar, Sun, Moon } from "lucide-react";
 import { createClient } from "@/utils/supabase/client";
 import { useEffect, useState } from "react";
 import { clsx } from "clsx";
@@ -9,6 +9,7 @@ import CategoryManager from "./CategoryManager";
 import BudgetManager from "./BudgetManager";
 import TransactionHistory from "./TransactionHistory";
 import { SplashScreen } from "./SplashScreen";
+import { useTheme } from "@/contexts/ThemeContext";
 
 export default function Dashboard({ userId }: { userId: string }) {
     const [balance, setBalance] = useState(0);
@@ -26,6 +27,7 @@ export default function Dashboard({ userId }: { userId: string }) {
     const [barData, setBarData] = useState<any[]>([]);
 
     const supabase = createClient();
+    const { theme, toggleTheme } = useTheme();
 
     // Function to refresh all data - pass this to children if they modify data
     const refreshData = async () => {
@@ -112,32 +114,43 @@ export default function Dashboard({ userId }: { userId: string }) {
     if (loading) return <SplashScreen />;
 
     return (
-        <div className="min-h-screen bg-black bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-gray-900 via-black to-black pb-24 md:pb-10">
+        <div className="min-h-screen bg-background pb-24 md:pb-10">
 
             {/* Header / Nav */}
-            <nav className="border-b border-white/10 sticky top-0 z-50 backdrop-blur-md bg-black/50">
+            <nav className="border-b border-[var(--glass-border)] sticky top-0 z-50 backdrop-blur-md bg-[var(--glass-bg)]">
                 <div className="max-w-7xl mx-auto px-4 md:px-8 h-16 flex items-center justify-between">
                     <div className="flex items-center gap-2">
                         <Wallet className="text-primary h-8 w-8" />
-                        <h1 className="text-2xl font-bold font-headline tracking-tight text-white hidden md:block">
+                        <h1 className="text-2xl font-bold font-headline tracking-tight text-foreground hidden md:block">
                             SIKAI <span className="text-primary">FINANCE</span>
                         </h1>
                     </div>
 
-                    {/* User Profile / Menu */}
-                    <div className="relative group">
-                        <button className="h-9 w-9 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 border border-white/20 flex items-center justify-center text-white text-xs font-bold hover:scale-105 transition-transform shadow-lg shadow-indigo-500/20">
-                            MS
+                    <div className="flex items-center gap-3">
+                        {/* Theme Toggle */}
+                        <button
+                            onClick={toggleTheme}
+                            className="h-9 w-9 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-foreground hover:bg-white/10 hover:scale-105 transition-all"
+                            title={theme === 'dark' ? 'Modo Claro' : 'Modo Oscuro'}
+                        >
+                            {theme === 'dark' ? <Sun size={18} /> : <Moon size={18} />}
                         </button>
 
-                        {/* Dropdown */}
-                        <div className="absolute right-0 top-full mt-2 w-48 bg-black/90 border border-white/10 rounded-xl shadow-2xl p-1 opacity-0 group-hover:opacity-100 invisible group-hover:visible transition-all duration-200 transform origin-top-right z-50">
-                            <button
-                                onClick={handleLogout}
-                                className="w-full text-left px-4 py-3 text-sm text-red-400 hover:bg-white/5 rounded-lg transition-colors flex items-center gap-2"
-                            >
-                                <span className="w-2 h-2 rounded-full bg-red-500"></span> Cerrar Sesión
+                        {/* User Profile / Menu */}
+                        <div className="relative group">
+                            <button className="h-9 w-9 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 border border-white/20 flex items-center justify-center text-white text-xs font-bold hover:scale-105 transition-transform shadow-lg shadow-indigo-500/20">
+                                MS
                             </button>
+
+                            {/* Dropdown */}
+                            <div className="absolute right-0 top-full mt-2 w-48 bg-[var(--glass-bg)] border border-[var(--glass-border)] rounded-xl shadow-2xl p-1 opacity-0 group-hover:opacity-100 invisible group-hover:visible transition-all duration-200 transform origin-top-right z-50 backdrop-blur-xl">
+                                <button
+                                    onClick={handleLogout}
+                                    className="w-full text-left px-4 py-3 text-sm text-red-500 hover:bg-red-500/10 rounded-lg transition-colors flex items-center gap-2"
+                                >
+                                    <span className="w-2 h-2 rounded-full bg-red-500"></span> Cerrar Sesión
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>

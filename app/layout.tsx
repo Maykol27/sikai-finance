@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Poppins, PT_Sans, Source_Code_Pro } from "next/font/google";
 import "./globals.css";
+import ClientProviders from "./ClientProviders";
 
 const poppins = Poppins({
   subsets: ["latin"],
@@ -40,7 +41,7 @@ export default function RootLayout({
       <body
         className={`${poppins.variable} ${ptSans.variable} ${sourceCodePro.variable} antialiased bg-background text-foreground`}
       >
-        {children}
+        <ClientProviders>{children}</ClientProviders>
       </body>
     </html>
   );
