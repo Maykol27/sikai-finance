@@ -15,7 +15,8 @@ create table if not exists public.categories (
   id uuid default uuid_generate_v4() primary key,
   user_id uuid references public.users(id) not null,
   name text not null,
-  type text check (type in ('income', 'expense')) not null,
+  type text check (type in ('income', 'expense', 'savings')) not null,
+  parent_id uuid references public.categories(id) on delete cascade,
   color text,
   icon text,
   created_at timestamp with time zone default timezone('utc'::text, now()) not null
