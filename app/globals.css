@@ -1,0 +1,84 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  /* Base Palette - Dark Mode Optimized */
+  --background: #0f1115;
+  /* Deeper black/blue */
+  --foreground: #e0e6ed;
+
+  /* Sikai Brand Colors - Neonified */
+  --primary: #1a88ff;
+  --primary-glow: rgba(26, 136, 255, 0.5);
+
+  --primary-cyan: #26d8c4;
+  --cyan-glow: rgba(38, 216, 196, 0.5);
+
+  /* UI Elements */
+  --muted: 215 20% 15%;
+  --muted-foreground: 215 20% 65%;
+
+  --card: 220 25% 10%;
+  /* Darker card */
+  --card-foreground: 210 40% 98%;
+
+  --border: 217.2 32.6% 17.5%;
+
+  /* Glassmorphism */
+  --glass-bg: rgba(22, 24, 29, 0.7);
+  --glass-border: rgba(255, 255, 255, 0.08);
+  --glass-highlight: rgba(255, 255, 255, 0.05);
+}
+
+@layer base {
+  body {
+    @apply bg-background text-foreground font-body selection:bg-primary/30 selection:text-white;
+    background-image:
+      radial-gradient(circle at 50% 0%, rgba(26, 136, 255, 0.08) 0%, transparent 50%),
+      radial-gradient(circle at 100% 0%, rgba(38, 216, 196, 0.05) 0%, transparent 40%);
+    background-attachment: fixed;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    @apply font-headline tracking-tight;
+  }
+}
+
+@layer utilities {
+  .glass {
+    @apply bg-[length:200%_200%] backdrop-blur-xl border border-[color:var(--glass-border)] shadow-lg;
+    background-color: var(--glass-bg);
+  }
+
+  .glass-card {
+    @apply glass rounded-xl transition-all duration-300;
+  }
+
+  .glass-card:hover {
+    border-color: rgba(26, 136, 255, 0.3);
+    box-shadow: 0 0 20px -5px var(--primary-glow);
+    background-color: rgba(22, 24, 29, 0.85);
+  }
+
+  .text-glow {
+    text-shadow: 0 0 10px var(--primary-glow);
+  }
+
+  .border-glow {
+    box-shadow: 0 0 10px -2px var(--primary-glow);
+  }
+
+  .neon-text-blue {
+    text-shadow: 0 0 5px rgba(26, 136, 255, 0.6), 0 0 10px rgba(26, 136, 255, 0.4);
+  }
+
+  .neon-text-cyan {
+    text-shadow: 0 0 5px rgba(38, 216, 196, 0.6), 0 0 10px rgba(38, 216, 196, 0.4);
+  }
+}
