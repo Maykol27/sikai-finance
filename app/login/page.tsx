@@ -3,7 +3,7 @@
 import { createClient } from "@/utils/supabase/client";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Wallet, ArrowRight, UserPlus, LogIn } from "lucide-react";
+import { Wallet, ArrowRight, UserPlus } from "lucide-react";
 
 export default function LoginPage() {
     const [email, setEmail] = useState("");
@@ -39,7 +39,7 @@ export default function LoginPage() {
                 if (error) throw error;
 
                 setMsg({ text: "¡Cuenta creada! Revisa tu email o inicia sesión.", type: 'success' });
-                setIsRegistering(false); // Switch back to login for them to enter credentials or auto-login if session established
+                setIsRegistering(false);
             } else {
                 // LOGIN LOGIC
                 const { error } = await supabase.auth.signInWithPassword({
@@ -60,51 +60,61 @@ export default function LoginPage() {
     };
 
     return (
-        <div className="min-h-screen bg-black flex flex-col items-center justify-center p-6 relative overflow-hidden text-white">
-            {/* Background decoration */}
-            <div className="absolute top-[-20%] left-[-10%] w-[500px] h-[500px] bg-primary-cyan/20 rounded-full blur-[120px]" />
-            <div className="absolute bottom-[-20%] right-[-10%] w-[500px] h-[500px] bg-blue-600/20 rounded-full blur-[120px]" />
+        <div className="min-h-screen bg-black flex flex-col items-center justify-center p-6 relative overflow-hidden text-white font-sans">
+            {/* Background decoration - matching the dark/blue vibe */}
+            <div className="absolute top-[-20%] left-[-10%] w-[600px] h-[600px] bg-blue-600/10 rounded-full blur-[120px]" />
+            <div className="absolute bottom-[-20%] right-[-10%] w-[600px] h-[600px] bg-cyan-500/10 rounded-full blur-[120px]" />
 
-            <div className="glass-card w-full max-w-sm border border-white/10 rounded-2xl p-8 shadow-2xl backdrop-blur-md z-10 relative animation-delay-200 animate-in fade-in zoom-in duration-500">
+            {/* Main Card */}
+            <div className="w-full max-w-[400px] bg-[#0A0A0A] border border-gray-800 rounded-3xl p-8 shadow-2xl relative z-10 animate-in zoom-in-50 duration-500">
+                {/* Top Border Glow (Gradient Line) */}
+                <div className="absolute top-0 left-1/2 -translate-x-1/2 w-1/2 h-[1px] bg-gradient-to-r from-transparent via-blue-500 to-transparent opacity-70"></div>
 
-                <div className="flex flex-col items-center mb-8 text-center">
-                    <div className="p-4 bg-white/5 border border-white/10 rounded-full mb-4 shadow-neon">
-                        <Wallet className="w-8 h-8 text-primary-cyan" />
+                {/* Logo Section */}
+                <div className="flex justify-center mb-6">
+                    <div className="relative w-24 h-24 flex items-center justify-center rounded-full bg-black border border-gray-800 shadow-[0_0_20px_rgba(37,99,235,0.2)]">
+                        <div className="absolute inset-0 rounded-full border border-blue-500/30 animate-pulse"></div>
+                        <img src="/favicon.ico" alt="Sikai Logo" className="w-12 h-12 object-contain drop-shadow-[0_0_10px_rgba(37,99,235,0.8)]" />
                     </div>
-                    <h1 className="text-3xl font-headline font-bold text-transparent bg-clip-text bg-gradient-to-r from-white to-gray-400">
-                        {isRegistering ? "Crear Cuenta" : "Bienvenido a SIKAI"}
+                </div>
+
+                {/* Headers */}
+                <div className="text-center mb-8">
+                    <h1 className="text-2xl font-bold text-white mb-2 tracking-tight">
+                        {isRegistering ? "Crear Cuenta SIKAI" : "Bienvenido a SIKAI"}
                     </h1>
-                    <p className="text-muted-foreground text-sm mt-2">
-                        {isRegistering ? "Únete a la revolución financiera" : "Tu asistente financiero inteligente"}
+                    <p className="text-gray-400 text-sm">
+                        {isRegistering ? "Comienza a gestionar tus finanzas hoy" : "Inicia sesión para gestionar tus facturas"}
                     </p>
                 </div>
 
                 {msg && (
-                    <div className={`mb-4 p-3 rounded-lg text-xs font-bold text-center ${msg.type === 'error' ? 'bg-red-500/20 text-red-300 border border-red-500/30' : 'bg-green-500/20 text-green-300 border border-green-500/30'}`}>
+                    <div className={`mb-6 p-3 rounded-lg text-xs font-bold text-center ${msg.type === 'error' ? 'bg-red-500/10 text-red-400 border border-red-500/20' : 'bg-green-500/10 text-green-400 border border-green-500/20'}`}>
                         {msg.text}
                     </div>
                 )}
 
-                <form onSubmit={handleAuth} className="space-y-4">
-                    <div>
-                        <label className="block text-xs font-bold text-muted-foreground mb-1 uppercase tracking-wider">Email</label>
+                <form onSubmit={handleAuth} className="space-y-5">
+                    <div className="space-y-1.5">
+                        <label className="block text-xs font-semibold text-gray-400 ml-1">Email Corporativo / Personal</label>
                         <input
                             type="email"
                             value={email}
                             onChange={(e) => setEmail(e.target.value)}
-                            className="w-full bg-black/40 border border-white/10 rounded-xl p-3 text-white focus:ring-1 focus:ring-primary-cyan focus:border-primary-cyan focus:outline-none transition-all placeholder:text-white/20"
-                            placeholder="nombre@ejemplo.com"
+                            className="w-full bg-[#111] border border-gray-800 rounded-xl px-4 py-3 text-white text-sm focus:ring-1 focus:ring-blue-500 focus:border-blue-500 focus:outline-none transition-all placeholder:text-gray-600"
+                            placeholder="nombre@empresa.com"
                             required
                         />
                     </div>
-                    <div>
-                        <label className="block text-xs font-bold text-muted-foreground mb-1 uppercase tracking-wider">Contraseña</label>
+
+                    <div className="space-y-1.5">
+                        <label className="block text-xs font-semibold text-gray-400 ml-1">Contraseña</label>
                         <input
                             type="password"
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
-                            className="w-full bg-black/40 border border-white/10 rounded-xl p-3 text-white focus:ring-1 focus:ring-primary-cyan focus:border-primary-cyan focus:outline-none transition-all placeholder:text-white/20"
-                            placeholder="••••••••"
+                            className="w-full bg-[#111] border border-gray-800 rounded-xl px-4 py-3 text-white text-sm focus:ring-1 focus:ring-blue-500 focus:border-blue-500 focus:outline-none transition-all placeholder:text-gray-600"
+                            placeholder="••••••••••••"
                             required
                             minLength={6}
                         />
@@ -113,38 +123,32 @@ export default function LoginPage() {
                     <button
                         type="submit"
                         disabled={loading}
-                        className="w-full group bg-primary hover:bg-primary-hover text-white font-bold py-3.5 rounded-xl transition-all shadow-neon mt-4 flex items-center justify-center gap-2 relative overflow-hidden"
+                        className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3.5 rounded-xl transition-colors shadow-lg shadow-blue-900/20 mt-2 text-sm flex items-center justify-center gap-2"
                     >
-                        <div className="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300" />
-                        <span className="relative z-10 flex items-center gap-2">
-                            {loading ? "Procesando..." : isRegistering ? (
-                                <>Registrarse <UserPlus size={18} /></>
-                            ) : (
-                                <>Iniciar Sesión <ArrowRight size={18} /></>
-                            )}
-                        </span>
+                        {loading ? "Procesando..." : isRegistering ? "Registrarse Ahora" : "Iniciar Sesión"}
                     </button>
                 </form>
 
-                <div className="mt-8 pt-6 border-t border-white/10 text-center">
-                    <p className="text-xs text-muted-foreground mb-3">
-                        {isRegistering ? "¿Ya tienes una cuenta?" : "¿Aún no tienes cuenta?"}
-                    </p>
+                <div className="mt-8 text-center">
                     <button
                         onClick={() => {
                             setIsRegistering(!isRegistering);
                             setMsg(null);
                         }}
-                        className="text-primary-cyan hover:text-white hover:underline text-sm font-bold flex items-center justify-center gap-2 mx-auto transition-colors"
+                        className="text-gray-500 hover:text-white text-sm transition-colors"
                     >
-                        {isRegistering ? "Inicia Sesión" : "Regístrate Ahora"}
+                        {isRegistering ? (
+                            <>¿Ya tienes cuenta? <span className="text-gray-300 hover:underline">Inicia Sesión</span></>
+                        ) : (
+                            <>¿No tienes cuenta? <span className="text-gray-300 hover:underline">Regístrate</span></>
+                        )}
                     </button>
                 </div>
             </div>
 
-            <p className="mt-8 text-xs text-muted-foreground opacity-50">
-                &copy; 2026 SIKAI Finance. All rights reserved.
-            </p>
+            <div className="mt-8 text-[10px] text-gray-600 uppercase tracking-widest">
+                Sikai Finance System
+            </div>
         </div>
     );
 }
