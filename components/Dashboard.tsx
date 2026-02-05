@@ -21,6 +21,7 @@ export default function Dashboard({ userId }: { userId: string }) {
     // Modal States
     const [showCategories, setShowCategories] = useState(false);
     const [showBudget, setShowBudget] = useState(false);
+    const [userInitials, setUserInitials] = useState("U");
 
     // Chart Data
     const [pieData, setPieData] = useState<any[]>([]);
@@ -92,6 +93,24 @@ export default function Dashboard({ userId }: { userId: string }) {
         setLoading(false);
     };
 
+    // Fetch user initials
+    useEffect(() => {
+        const fetchUserInitials = async () => {
+            const { data: { user } } = await supabase.auth.getUser();
+            if (user) {
+                // Try to get name from user_metadata, fallback to email
+                const name = user.user_metadata?.full_name || user.user_metadata?.name || user.email || "U";
+                const parts = name.split(/[\s@.]+/).filter(Boolean);
+                if (parts.length >= 2) {
+                    setUserInitials((parts[0][0] + parts[1][0]).toUpperCase());
+                } else if (parts.length === 1) {
+                    setUserInitials(parts[0].substring(0, 2).toUpperCase());
+                }
+            }
+        };
+        fetchUserInitials();
+    }, []);
+
     useEffect(() => {
         refreshData();
 
@@ -139,7 +158,7 @@ export default function Dashboard({ userId }: { userId: string }) {
                         {/* User Profile / Menu */}
                         <div className="relative group">
                             <button className="h-9 w-9 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 border border-white/20 flex items-center justify-center text-white text-xs font-bold hover:scale-105 transition-transform shadow-lg shadow-indigo-500/20">
-                                MS
+                                {userInitials}
                             </button>
 
                             {/* Dropdown */}
