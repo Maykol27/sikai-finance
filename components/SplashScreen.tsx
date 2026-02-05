@@ -29,18 +29,24 @@ export function SplashScreen({ onFinish }: { onFinish?: () => void }) {
         let width = canvas.width = window.innerWidth;
         let height = canvas.height = window.innerHeight;
 
-        const particles: { x: number; y: number; vx: number; vy: number; size: number }[] = [];
-        const particleCount = Math.min(width * 0.1, 150); // Responsive count
+        const particles: { x: number; y: number; vx: number; vy: number; targetVx: number; targetVy: number; size: number }[] = [];
+        const particleCount = Math.min(width * 0.08, 100); // Slightly fewer particles
         const connectionDistance = 150;
+        const startTime = Date.now();
+        const easeInDuration = 2000; // 2 seconds to reach full speed
 
-        // Init particles
+        // Init particles - start with zero velocity, will ease into target velocity
         for (let i = 0; i < particleCount; i++) {
+            const targetVx = (Math.random() - 0.5) * 0.3; // Slower max velocity
+            const targetVy = (Math.random() - 0.5) * 0.3;
             particles.push({
                 x: Math.random() * width,
                 y: Math.random() * height,
-                vx: (Math.random() - 0.5) * 0.5,
-                vy: (Math.random() - 0.5) * 0.5,
-                size: Math.random() * 2 + 1
+                vx: 0, // Start stationary
+                vy: 0,
+                targetVx,
+                targetVy,
+                size: Math.random() * 1.5 + 0.8
             });
         }
 
@@ -48,14 +54,37 @@ export function SplashScreen({ onFinish }: { onFinish?: () => void }) {
             if (!ctx) return;
             ctx.clearRect(0, 0, width, height);
 
+            // Calculate ease-in factor (0 to 1 over easeInDuration)
+            const elapsed = Date.now() - startTime;
+            const easeFactor = Math.min(elapsed / easeInDuration, 1);
+            // Use easeOutCubic for smooth acceleration
+            const smoothEase = 1 - Math.pow(1 - easeFactor, 3);
+
             // Draw particles
             particles.forEach((p, i) => {
+                // Gradually ease velocity towards target
+                p.vx = p.targetVx * smoothEase;
+                p.vy = p.targetVy * smoothEase;
+
                 p.x += p.vx;
                 p.y += p.vy;
 
-                // Bounce off edges
-                if (p.x < 0 || p.x > width) p.vx *= -1;
-                if (p.y < 0 || p.y > height) p.vy *= -1;
+                // Soft bounce - gradually reverse direction near edges instead of instant flip
+                const edgeBuffer = 20;
+                if (p.x < edgeBuffer) {
+                    p.targetVx = Math.abs(p.targetVx);
+                } else if (p.x > width - edgeBuffer) {
+                    p.targetVx = -Math.abs(p.targetVx);
+                }
+                if (p.y < edgeBuffer) {
+                    p.targetVy = Math.abs(p.targetVy);
+                } else if (p.y > height - edgeBuffer) {
+                    p.targetVy = -Math.abs(p.targetVy);
+                }
+
+                // Keep particles in bounds (safety)
+                p.x = Math.max(0, Math.min(width, p.x));
+                p.y = Math.max(0, Math.min(height, p.y));
 
                 // Draw node
                 ctx.beginPath();
