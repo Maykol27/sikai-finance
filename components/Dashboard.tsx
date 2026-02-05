@@ -1,7 +1,7 @@
 "use client";
 
-import { PieChart, Pie, Cell, ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip, CartesianGrid, Legend } from "recharts";
-import { ArrowUpRight, ArrowDownRight, Wallet, Target, Layers, Calendar, Sun, Moon } from "lucide-react";
+import { PieChart, Pie, Cell, ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip, CartesianGrid, Legend, Sector } from "recharts";
+import { ArrowUpRight, ArrowDownRight, Wallet, Target, Layers, Calendar, Sun, Moon, ArrowLeft } from "lucide-react";
 import { createClient } from "@/utils/supabase/client";
 import { useEffect, useState } from "react";
 import { clsx } from "clsx";
@@ -25,7 +25,11 @@ export default function Dashboard({ userId }: { userId: string }) {
 
     // Chart Data
     const [pieData, setPieData] = useState<any[]>([]);
+    const [subPieData, setSubPieData] = useState<any[]>([]);
     const [barData, setBarData] = useState<any[]>([]);
+    const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+    const [allCategories, setAllCategories] = useState<any[]>([]);
+    const [allTransactions, setAllTransactions] = useState<any[]>([]);
 
     const supabase = createClient();
     const { theme, toggleTheme } = useTheme();
@@ -40,10 +44,10 @@ export default function Dashboard({ userId }: { userId: string }) {
             .select('*')
             .eq('user_id', userId);
 
-        // 2. Fetch Categories
+        // 2. Fetch Categories with parent_id
         const { data: categories } = await supabase
             .from('categories')
-            .select('id, name, type')
+            .select('id, name, type, parent_id')
             .eq('user_id', userId);
 
         if (transactions && categories) {
@@ -82,15 +86,76 @@ export default function Dashboard({ userId }: { userId: string }) {
             setIncome(totalInc);
             setExpense(totalExp);
             setBalance(totalInc - totalExp);
+            setAllCategories(categories);
+            setAllTransactions(transactions);
 
-            // Transform Maps to Arrays for Charts
-            const pie = Object.keys(categoryMap).map(k => ({ name: k, value: categoryMap[k] }));
+            // Transform Maps to Arrays for Charts - only parent categories
+            const parentCategoryMap: Record<string, number> = {};
+            transactions.forEach((t: any) => {
+                const category = categories.find((c: any) => c.id === t.category_id);
+                if (!category || category.type === 'income') return;
+
+                // Find the parent category
+                let parentCat = category;
+                if (category.parent_id) {
+                    const parent = categories.find((c: any) => c.id === category.parent_id);
+                    if (parent) parentCat = parent;
+                }
+
+                parentCategoryMap[parentCat.name] = (parentCategoryMap[parentCat.name] || 0) + Number(t.amount);
+            });
+
+            const pie = Object.keys(parentCategoryMap).map(k => ({ name: k, value: parentCategoryMap[k] }));
             setPieData(pie);
 
             const bar = Object.keys(timeMap).map(k => ({ name: k, ...timeMap[k] }));
             setBarData(bar);
+
+            // Reset drill-down
+            setSelectedCategory(null);
+            setSubPieData([]);
         }
         setLoading(false);
+    };
+
+    // Handle click on category to show subcategories
+    const handleCategoryClick = (categoryName: string) => {
+        // Find the parent category by name
+        const parentCat = allCategories.find((c: any) => c.name === categoryName && !c.parent_id);
+        if (!parentCat) return;
+
+        // Find all subcategories of this parent
+        const subcategories = allCategories.filter((c: any) => c.parent_id === parentCat.id);
+
+        if (subcategories.length === 0) {
+            // No subcategories, don't drill down
+            return;
+        }
+
+        // Calculate amounts per subcategory
+        const subCategoryMap: Record<string, number> = {};
+        allTransactions.forEach((t: any) => {
+            const category = allCategories.find((c: any) => c.id === t.category_id);
+            if (!category) return;
+
+            // Check if this transaction belongs to a subcategory of the selected parent
+            if (category.parent_id === parentCat.id) {
+                subCategoryMap[category.name] = (subCategoryMap[category.name] || 0) + Number(t.amount);
+            }
+        });
+
+        const subData = Object.keys(subCategoryMap).map(k => ({ name: k, value: subCategoryMap[k] }));
+
+        if (subData.length > 0) {
+            setSelectedCategory(categoryName);
+            setSubPieData(subData);
+        }
+    };
+
+    // Go back to parent categories view
+    const handleBackToCategories = () => {
+        setSelectedCategory(null);
+        setSubPieData([]);
     };
 
     // Fetch user initials
@@ -251,15 +316,33 @@ export default function Dashboard({ userId }: { userId: string }) {
 
                     {/* Pie Chart */}
                     <div className="glass-card p-6 lg:col-span-1 flex flex-col relative min-h-[300px]">
-                        <h3 className="text-lg font-headline font-semibold mb-2 w-full text-left flex items-center gap-2">
-                            <Target size={18} className="text-primary" /> Gastos por Categoría
-                        </h3>
+                        <div className="flex items-center justify-between mb-2">
+                            <h3 className="text-lg font-headline font-semibold flex items-center gap-2">
+                                <Target size={18} className="text-primary" />
+                                {selectedCategory ? (
+                                    <span className="flex items-center gap-2">
+                                        <span className="text-muted-foreground">Subcategorías de</span>
+                                        <span className="text-primary-cyan">{selectedCategory}</span>
+                                    </span>
+                                ) : (
+                                    'Gastos por Categoría'
+                                )}
+                            </h3>
+                            {selectedCategory && (
+                                <button
+                                    onClick={handleBackToCategories}
+                                    className="p-1.5 rounded-lg bg-primary/10 hover:bg-primary/20 text-primary transition-colors flex items-center gap-1 text-xs"
+                                >
+                                    <ArrowLeft size={14} /> Volver
+                                </button>
+                            )}
+                        </div>
                         <div className="h-48 w-full relative">
-                            {pieData.length > 0 ? (
+                            {(selectedCategory ? subPieData : pieData).length > 0 ? (
                                 <ResponsiveContainer width="100%" height="100%">
                                     <PieChart>
                                         <Pie
-                                            data={pieData}
+                                            data={selectedCategory ? subPieData : pieData}
                                             cx="50%"
                                             cy="50%"
                                             innerRadius={45}
@@ -267,9 +350,17 @@ export default function Dashboard({ userId }: { userId: string }) {
                                             paddingAngle={5}
                                             dataKey="value"
                                             stroke="none"
+                                            onClick={(data) => !selectedCategory && handleCategoryClick(data.name)}
+                                            style={{ cursor: selectedCategory ? 'default' : 'pointer' }}
                                         >
-                                            {pieData.map((entry, index) => (
-                                                <Cell key={`cell-${index}`} fill={['#ec4899', '#26d8c4', '#1a88ff', '#facc15'][index % 4]} />
+                                            {(selectedCategory ? subPieData : pieData).map((entry, index) => (
+                                                <Cell
+                                                    key={`cell-${index}`}
+                                                    fill={selectedCategory
+                                                        ? ['#a855f7', '#f97316', '#14b8a6', '#f43f5e', '#3b82f6'][index % 5]
+                                                        : ['#ec4899', '#26d8c4', '#1a88ff', '#facc15'][index % 4]
+                                                    }
+                                                />
                                             ))}
                                         </Pie>
                                         <Tooltip
@@ -284,18 +375,29 @@ export default function Dashboard({ userId }: { userId: string }) {
                             )}
                         </div>
                         {/* Custom Legend for Pie Chart */}
-                        {pieData.length > 0 && (
-                            <div className="flex flex-wrap justify-center gap-x-4 gap-y-2 mt-2 px-2">
-                                {pieData.map((entry, index) => (
-                                    <div key={entry.name} className="flex items-center gap-1.5 text-xs">
+                        {(selectedCategory ? subPieData : pieData).length > 0 && (
+                            <div className="flex flex-wrap justify-center gap-x-3 gap-y-2 mt-2 px-2">
+                                {(selectedCategory ? subPieData : pieData).map((entry, index) => (
+                                    <button
+                                        key={entry.name}
+                                        onClick={() => !selectedCategory && handleCategoryClick(entry.name)}
+                                        className={`flex items-center gap-1.5 text-xs transition-all ${!selectedCategory ? 'hover:scale-105 cursor-pointer' : ''}`}
+                                    >
                                         <span
-                                            className="w-3 h-3 rounded-full shrink-0"
-                                            style={{ backgroundColor: ['#ec4899', '#26d8c4', '#1a88ff', '#facc15'][index % 4] }}
+                                            className="w-2.5 h-2.5 rounded-full shrink-0"
+                                            style={{
+                                                backgroundColor: selectedCategory
+                                                    ? ['#a855f7', '#f97316', '#14b8a6', '#f43f5e', '#3b82f6'][index % 5]
+                                                    : ['#ec4899', '#26d8c4', '#1a88ff', '#facc15'][index % 4]
+                                            }}
                                         />
-                                        <span className="text-muted-foreground truncate max-w-[80px]">{entry.name}</span>
-                                    </div>
+                                        <span className="text-muted-foreground truncate max-w-[70px]">{entry.name}</span>
+                                    </button>
                                 ))}
                             </div>
+                        )}
+                        {!selectedCategory && pieData.length > 0 && (
+                            <p className="text-[10px] text-center text-muted-foreground/50 mt-2">Toca una categoría para ver subcategorías</p>
                         )}
                     </div>
 
