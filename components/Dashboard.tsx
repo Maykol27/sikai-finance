@@ -1,6 +1,6 @@
 "use client";
 
-import { PieChart, Pie, Cell, ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip, CartesianGrid } from "recharts";
+import { PieChart, Pie, Cell, ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip, CartesianGrid, Legend } from "recharts";
 import { ArrowUpRight, ArrowDownRight, Wallet, Target, Layers, Calendar, Sun, Moon } from "lucide-react";
 import { createClient } from "@/utils/supabase/client";
 import { useEffect, useState } from "react";
@@ -250,11 +250,11 @@ export default function Dashboard({ userId }: { userId: string }) {
                 <section className="grid grid-cols-1 lg:grid-cols-3 gap-6">
 
                     {/* Pie Chart */}
-                    <div className="glass-card p-6 lg:col-span-1 flex flex-col items-center justify-center relative min-h-[300px]">
+                    <div className="glass-card p-6 lg:col-span-1 flex flex-col relative min-h-[300px]">
                         <h3 className="text-lg font-headline font-semibold mb-2 w-full text-left flex items-center gap-2">
                             <Target size={18} className="text-primary" /> Gastos por Categoría
                         </h3>
-                        <div className="h-64 w-full relative">
+                        <div className="h-48 w-full relative">
                             {pieData.length > 0 ? (
                                 <ResponsiveContainer width="100%" height="100%">
                                     <PieChart>
@@ -262,8 +262,8 @@ export default function Dashboard({ userId }: { userId: string }) {
                                             data={pieData}
                                             cx="50%"
                                             cy="50%"
-                                            innerRadius={60}
-                                            outerRadius={80}
+                                            innerRadius={45}
+                                            outerRadius={65}
                                             paddingAngle={5}
                                             dataKey="value"
                                             stroke="none"
@@ -275,6 +275,7 @@ export default function Dashboard({ userId }: { userId: string }) {
                                         <Tooltip
                                             contentStyle={{ backgroundColor: '#000', borderRadius: '8px', border: '1px solid #333' }}
                                             itemStyle={{ color: '#fff' }}
+                                            formatter={(value) => [`$${Number(value).toLocaleString('es-CO')}`, '']}
                                         />
                                     </PieChart>
                                 </ResponsiveContainer>
@@ -282,28 +283,55 @@ export default function Dashboard({ userId }: { userId: string }) {
                                 <div className="flex items-center justify-center h-full text-muted-foreground text-sm">Sin datos aún</div>
                             )}
                         </div>
+                        {/* Custom Legend for Pie Chart */}
+                        {pieData.length > 0 && (
+                            <div className="flex flex-wrap justify-center gap-x-4 gap-y-2 mt-2 px-2">
+                                {pieData.map((entry, index) => (
+                                    <div key={entry.name} className="flex items-center gap-1.5 text-xs">
+                                        <span
+                                            className="w-3 h-3 rounded-full shrink-0"
+                                            style={{ backgroundColor: ['#ec4899', '#26d8c4', '#1a88ff', '#facc15'][index % 4] }}
+                                        />
+                                        <span className="text-muted-foreground truncate max-w-[80px]">{entry.name}</span>
+                                    </div>
+                                ))}
+                            </div>
+                        )}
                     </div>
 
                     {/* Bar Chart */}
                     <div className="glass-card p-6 lg:col-span-2 min-h-[300px]">
-                        <h3 className="text-lg font-headline font-semibold mb-6 flex items-center gap-2">
-                            <Calendar size={18} className="text-primary" /> Flujo Financiero
-                        </h3>
-                        <div className="h-64 cursor-crosshair">
+                        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-4">
+                            <h3 className="text-lg font-headline font-semibold flex items-center gap-2">
+                                <Calendar size={18} className="text-primary" /> Flujo Financiero
+                            </h3>
+                            {/* Legend for Bar Chart */}
+                            <div className="flex items-center gap-4 text-xs">
+                                <div className="flex items-center gap-1.5">
+                                    <span className="w-3 h-3 rounded-sm bg-[#26d8c4]"></span>
+                                    <span className="text-muted-foreground">Ingresos</span>
+                                </div>
+                                <div className="flex items-center gap-1.5">
+                                    <span className="w-3 h-3 rounded-sm bg-[#ec4899]"></span>
+                                    <span className="text-muted-foreground">Gastos</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div className="h-56 cursor-crosshair">
                             {barData.length > 0 ? (
                                 <ResponsiveContainer width="100%" height="100%">
                                     <BarChart data={barData}>
                                         <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="rgba(255,255,255,0.05)" />
-                                        <XAxis dataKey="name" stroke="#4b5563" fontSize={12} tickLine={false} axisLine={false} />
-                                        <YAxis stroke="#4b5563" fontSize={12} tickLine={false} axisLine={false} tickFormatter={(value) => `$${value / 1000}k`} />
+                                        <XAxis dataKey="name" stroke="#4b5563" fontSize={11} tickLine={false} axisLine={false} />
+                                        <YAxis stroke="#4b5563" fontSize={11} tickLine={false} axisLine={false} tickFormatter={(value) => `$${value / 1000}k`} />
                                         <Tooltip
                                             cursor={{ fill: 'rgba(255,255,255,0.03)' }}
                                             contentStyle={{ backgroundColor: '#000', borderColor: '#333', borderRadius: '8px' }}
                                             formatter={(value) => value !== undefined ? [`$${Number(value).toLocaleString('es-CO')}`, ''] : ['', '']}
                                             labelFormatter={(label) => label}
                                         />
-                                        <Bar dataKey="inc" fill="#26d8c4" radius={[4, 4, 0, 0]} maxBarSize={40} name="Ingresos" />
-                                        <Bar dataKey="exp" fill="#ec4899" radius={[4, 4, 0, 0]} maxBarSize={40} name="Gastos" />
+                                        <Bar dataKey="inc" fill="#26d8c4" radius={[4, 4, 0, 0]} maxBarSize={35} name="Ingresos" />
+                                        <Bar dataKey="exp" fill="#ec4899" radius={[4, 4, 0, 0]} maxBarSize={35} name="Gastos" />
                                     </BarChart>
                                 </ResponsiveContainer>
                             ) : (
