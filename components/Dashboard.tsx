@@ -298,7 +298,9 @@ export default function Dashboard({ userId }: { userId: string }) {
                                         <YAxis stroke="#4b5563" fontSize={12} tickLine={false} axisLine={false} tickFormatter={(value) => `$${value / 1000}k`} />
                                         <Tooltip
                                             cursor={{ fill: 'rgba(255,255,255,0.03)' }}
-                                            contentStyle={{ backgroundColor: '#000', borderColor: '#333' }}
+                                            contentStyle={{ backgroundColor: '#000', borderColor: '#333', borderRadius: '8px' }}
+                                            formatter={(value) => value !== undefined ? [`$${Number(value).toLocaleString('es-CO')}`, ''] : ['', '']}
+                                            labelFormatter={(label) => label}
                                         />
                                         <Bar dataKey="inc" fill="#26d8c4" radius={[4, 4, 0, 0]} maxBarSize={40} name="Ingresos" />
                                         <Bar dataKey="exp" fill="#ec4899" radius={[4, 4, 0, 0]} maxBarSize={40} name="Gastos" />

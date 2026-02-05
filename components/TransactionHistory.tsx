@@ -109,25 +109,25 @@ export default function TransactionHistory({ userId }: { userId: string }) {
                 )}
 
                 {transactions.map((t) => (
-                    <div key={t.id} className="flex items-center justify-between p-4 rounded-xl bg-foreground/5 border border-[var(--glass-border)] hover:border-primary/30 transition-all group">
-                        <div className="flex items-center gap-4">
-                            <div className={`p-3 rounded-full ${t.categories?.type === 'income' ? 'bg-primary-cyan/20 text-primary-cyan' : 'bg-pink-500/20 text-pink-500'}`}>
-                                {t.categories?.type === 'income' ? <ArrowUpRight size={20} /> : <ArrowDownLeft size={20} />}
+                    <div key={t.id} className="flex flex-col sm:flex-row sm:items-center justify-between p-4 rounded-xl bg-foreground/5 border border-[var(--glass-border)] hover:border-primary/30 transition-all group gap-3">
+                        <div className="flex items-center gap-3 sm:gap-4 flex-1 min-w-0">
+                            <div className={`p-2.5 sm:p-3 rounded-full shrink-0 ${t.categories?.type === 'income' ? 'bg-primary-cyan/20 text-primary-cyan' : 'bg-pink-500/20 text-pink-500'}`}>
+                                {t.categories?.type === 'income' ? <ArrowUpRight size={18} /> : <ArrowDownLeft size={18} />}
                             </div>
-                            <div>
-                                <p className="text-foreground font-medium">{t.note || 'Sin nota'}</p>
-                                <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                            <div className="min-w-0 flex-1">
+                                <p className="text-foreground font-medium truncate">{t.note || 'Sin nota'}</p>
+                                <div className="flex flex-wrap items-center gap-1.5 sm:gap-2 text-xs text-muted-foreground mt-1">
                                     <span className="bg-primary/10 px-2 py-0.5 rounded text-primary">{t.categories?.name}</span>
-                                    <span>•</span>
-                                    <span>{format(new Date(t.date), "d MMM yyyy", { locale: es })}</span>
+                                    <span className="hidden sm:inline">•</span>
+                                    <span className="text-muted-foreground/70">{format(new Date(t.date), "d MMM yyyy", { locale: es })}</span>
                                 </div>
                             </div>
                         </div>
-                        <div className="flex items-center gap-4">
-                            <span className={`font-mono font-bold text-lg ${t.categories?.type === 'income' ? 'text-primary-cyan' : 'text-pink-500'}`}>
+                        <div className="flex items-center justify-between sm:justify-end gap-3 sm:gap-4 pl-10 sm:pl-0">
+                            <span className={`font-mono font-bold text-base sm:text-lg whitespace-nowrap ${t.categories?.type === 'income' ? 'text-primary-cyan' : 'text-pink-500'}`}>
                                 {t.categories?.type === 'income' ? '+' : '-'} ${Math.abs(t.amount).toLocaleString()}
                             </span>
-                            <button onClick={() => handleDelete(t.id)} className="opacity-0 group-hover:opacity-100 text-muted-foreground hover:text-red-500 transition">
+                            <button onClick={() => handleDelete(t.id)} className="opacity-100 sm:opacity-0 group-hover:opacity-100 text-muted-foreground hover:text-red-500 transition p-1">
                                 <Trash2 size={18} />
                             </button>
                         </div>
