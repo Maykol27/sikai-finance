@@ -7,7 +7,7 @@ import { Plus, Trash2, ChevronRight, ChevronDown, Folder, X, CheckCircle, AlertC
 type Category = {
     id: string;
     name: string;
-    type: 'income' | 'expense';
+    type: 'income' | 'expense' | 'savings';
     parent_id: string | null;
     subcategories?: Category[];
 };
@@ -18,7 +18,7 @@ export default function CategoryManager({ userId, isOpen, onClose }: { userId: s
 
     // New Root Category State
     const [newRootName, setNewRootName] = useState("");
-    const [rootType, setRootType] = useState<'income' | 'expense'>('expense');
+    const [rootType, setRootType] = useState<'income' | 'expense' | 'savings'>('expense');
 
     // Inline Subcategory State
     const [addingSubTo, setAddingSubTo] = useState<string | null>(null);
@@ -100,7 +100,7 @@ export default function CategoryManager({ userId, isOpen, onClose }: { userId: s
         }
     };
 
-    const handleAddSub = async (parentId: string, parentType: 'income' | 'expense') => {
+    const handleAddSub = async (parentId: string, parentType: 'income' | 'expense' | 'savings') => {
         if (!newSubName.trim()) return;
 
         const { error } = await supabase.from('categories').insert({
@@ -143,6 +143,7 @@ export default function CategoryManager({ userId, isOpen, onClose }: { userId: s
         const seedData = [
             { name: 'Sueldo', type: 'income', subs: ['Salario Base', 'Bonos', 'Comisiones'] },
             { name: 'Freelance', type: 'income', subs: ['Proyectos', 'Consultorías'] },
+            { name: 'Ahorros', type: 'savings', subs: ['Fondo de Emergencia', 'Inversiones', 'Metas'] },
             { name: 'Vivienda', type: 'expense', subs: ['Arriendo/Hipoteca', 'Mantenimiento', 'Seguros'] },
             { name: 'Comida', type: 'expense', subs: ['Supermercado', 'Restaurantes', 'Delivery'] },
             { name: 'Transporte', type: 'expense', subs: ['Gasolina', 'Transporte Público', 'Mantenimiento Vehículo'] },
@@ -219,6 +220,7 @@ export default function CategoryManager({ userId, isOpen, onClose }: { userId: s
                                 >
                                     <option value="income" className="text-black"> Ingreso</option>
                                     <option value="expense" className="text-black"> Gasto</option>
+                                    <option value="savings" className="text-black"> Ahorro</option>
                                 </select>
                                 <input
                                     value={newRootName}
@@ -259,20 +261,20 @@ export default function CategoryManager({ userId, isOpen, onClose }: { userId: s
                         categories.map(cat => (
                             <div key={cat.id} className="animate-in fade-in slide-in-from-bottom-2 duration-300">
                                 {/* Parent Row */}
-                                <div className={`group flex items-center justify-between p-3 rounded-xl border transition-all ${cat.type === 'income' ? 'bg-primary-cyan/5 border-primary-cyan/20 hover:border-primary-cyan/50' : 'bg-pink-500/5 border-pink-500/20 hover:border-pink-500/50'
+                                <div className={`group flex items-center justify-between p-3 rounded-xl border transition-all ${cat.type === 'income' ? 'bg-primary-cyan/5 border-primary-cyan/20 hover:border-primary-cyan/50' : cat.type === 'savings' ? 'bg-emerald-500/5 border-emerald-500/20 hover:border-emerald-500/50' : 'bg-pink-500/5 border-pink-500/20 hover:border-pink-500/50'
                                     }`}>
                                     <div className="flex items-center gap-3 flex-1 overflow-hidden">
                                         <button
                                             onClick={() => toggleExpand(cat.id)}
-                                            className={`p-1 rounded-full transition-colors ${cat.type === 'income' ? 'text-primary-cyan hover:bg-primary-cyan/20' : 'text-pink-500 hover:bg-pink-500/20'}`}
+                                            className={`p-1 rounded-full transition-colors ${cat.type === 'income' ? 'text-primary-cyan hover:bg-primary-cyan/20' : cat.type === 'savings' ? 'text-emerald-500 hover:bg-emerald-500/20' : 'text-pink-500 hover:bg-pink-500/20'}`}
                                         >
                                             {expanded[cat.id] ? <ChevronDown size={16} /> : <ChevronRight size={16} />}
                                         </button>
                                         <div className="flex flex-col">
-                                            <span className={`font-bold text-sm ${cat.type === 'income' ? 'text-primary-cyan' : 'text-pink-500'}`}>
+                                            <span className={`font-bold text-sm ${cat.type === 'income' ? 'text-primary-cyan' : cat.type === 'savings' ? 'text-emerald-500' : 'text-pink-500'}`}>
                                                 {cat.name}
                                             </span>
-                                            <span className="text-[10px] text-muted-foreground uppercase">{cat.type === 'income' ? 'Ingreso' : 'Gasto'}</span>
+                                            <span className="text-[10px] text-muted-foreground uppercase">{cat.type === 'income' ? 'Ingreso' : cat.type === 'savings' ? 'Ahorro' : 'Gasto'}</span>
                                         </div>
                                     </div>
 

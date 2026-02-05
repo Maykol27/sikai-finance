@@ -1,7 +1,7 @@
 "use client";
 
 import { PieChart, Pie, Cell, ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip, CartesianGrid, Legend, Sector } from "recharts";
-import { ArrowUpRight, ArrowDownRight, Wallet, Target, Layers, Calendar, Sun, Moon, ArrowLeft } from "lucide-react";
+import { ArrowUpRight, ArrowDownRight, Wallet, Target, Layers, Calendar, Sun, Moon, ArrowLeft, PiggyBank } from "lucide-react";
 import { createClient } from "@/utils/supabase/client";
 import { useEffect, useState } from "react";
 import { clsx } from "clsx";
@@ -15,6 +15,7 @@ export default function Dashboard({ userId }: { userId: string }) {
     const [balance, setBalance] = useState(0);
     const [income, setIncome] = useState(0);
     const [expense, setExpense] = useState(0);
+    const [savings, setSavings] = useState(0);
     const [loading, setLoading] = useState(true);
     const [timeFilter, setTimeFilter] = useState<'month' | 'year'>('month');
 
@@ -53,8 +54,9 @@ export default function Dashboard({ userId }: { userId: string }) {
         if (transactions && categories) {
             let totalInc = 0;
             let totalExp = 0;
+            let totalSav = 0;
             const categoryMap: Record<string, number> = {};
-            const timeMap: Record<string, { inc: number, exp: number }> = {};
+            const timeMap: Record<string, { inc: number, exp: number, sav: number }> = {};
 
             transactions.forEach((t: any) => {
                 const val = Number(t.amount);
@@ -66,6 +68,8 @@ export default function Dashboard({ userId }: { userId: string }) {
 
                 if (type === 'income') {
                     totalInc += val;
+                } else if (type === 'savings') {
+                    totalSav += val;
                 } else {
                     totalExp += val;
                     // For Pie Chart (Gastos por Categoría)
@@ -78,14 +82,16 @@ export default function Dashboard({ userId }: { userId: string }) {
                     ? `Sem ${Math.ceil(date.getDate() / 7)}` // Weekly grouping
                     : date.toLocaleString('default', { month: 'short' }); // Monthly grouping
 
-                if (!timeMap[key]) timeMap[key] = { inc: 0, exp: 0 };
+                if (!timeMap[key]) timeMap[key] = { inc: 0, exp: 0, sav: 0 };
                 if (type === 'income') timeMap[key].inc += val;
+                else if (type === 'savings') timeMap[key].sav += val;
                 else timeMap[key].exp += val;
             });
 
             setIncome(totalInc);
             setExpense(totalExp);
-            setBalance(totalInc - totalExp);
+            setSavings(totalSav);
+            setBalance(totalInc - totalExp - totalSav);
             setAllCategories(categories);
             setAllTransactions(transactions);
 
@@ -261,7 +267,7 @@ export default function Dashboard({ userId }: { userId: string }) {
                 </div>
 
                 {/* Hero Stats */}
-                <section className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                     {/* Main Balance */}
                     <div className="glass-card p-8 relative overflow-hidden group">
                         <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
@@ -306,6 +312,22 @@ export default function Dashboard({ userId }: { userId: string }) {
                             <div
                                 className="bg-pink-500 h-full shadow-[0_0_10px_#ec4899] transition-all duration-1000"
                                 style={{ width: `${Math.min((expense / (income + expense || 1)) * 100, 100)}%` }}
+                            ></div>
+                        </div>
+                    </div>
+
+                    {/* Savings */}
+                    <div className="glass-card p-6 flex flex-col justify-center">
+                        <p className="text-muted-foreground text-sm flex items-center gap-2 mb-1">
+                            <PiggyBank size={16} className="text-emerald-500" /> Ahorros
+                        </p>
+                        <p className="text-3xl font-bold font-mono text-emerald-500">
+                            $ {savings.toLocaleString()}
+                        </p>
+                        <div className="w-full bg-muted/50 h-1 mt-4 rounded-full overflow-hidden">
+                            <div
+                                className="bg-emerald-500 h-full shadow-[0_0_10px_#10b981] transition-all duration-1000"
+                                style={{ width: `${Math.min((savings / (income || 1)) * 100, 100)}%` }}
                             ></div>
                         </div>
                     </div>
