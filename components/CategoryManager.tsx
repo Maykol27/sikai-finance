@@ -136,6 +136,30 @@ export default function CategoryManager({ userId, isOpen, onClose }: { userId: s
         setExpanded(prev => ({ ...prev, [id]: !prev[id] }));
     };
 
+    const handleSeed = async () => {
+        setLoading(true);
+        const defaults = [
+            { name: 'Sueldo', type: 'income' },
+            { name: 'Freelance', type: 'income' },
+            { name: 'Vivienda', type: 'expense' },
+            { name: 'Comida', type: 'expense' },
+            { name: 'Transporte', type: 'expense' },
+            { name: 'Entretenimiento', type: 'expense' },
+            { name: 'Servicios', type: 'expense' }
+        ];
+
+        const promises = defaults.map(d => supabase.from('categories').insert({
+            user_id: userId,
+            name: d.name,
+            type: d.type,
+            parent_id: null
+        }));
+
+        await Promise.all(promises);
+        showNotify("¡Categorías sugeridas creadas!", 'success');
+        fetchCategories();
+    };
+
     if (!isOpen) return null;
 
     return (
@@ -203,6 +227,13 @@ export default function CategoryManager({ userId, isOpen, onClose }: { userId: s
                         <div className="text-center py-10 space-y-2 opacity-50">
                             <Folder size={48} className="mx-auto text-muted-foreground mb-4" />
                             <p className="text-muted-foreground">Comienza agregando una categoría arriba.</p>
+                            <p className="text-sm text-muted-foreground/50">- o -</p>
+                            <button
+                                onClick={handleSeed}
+                                className="text-primary-cyan hover:underline text-sm font-bold"
+                            >
+                                Generar Categorías Sugeridas
+                            </button>
                         </div>
                     ) : (
                         categories.map(cat => (

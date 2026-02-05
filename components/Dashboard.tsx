@@ -302,7 +302,12 @@ export default function Dashboard({ userId }: { userId: string }) {
 
                 {/* Modals */}
                 <CategoryManager isOpen={showCategories} onClose={() => setShowCategories(false)} userId={userId} />
-                <BudgetManager isOpen={showBudget} onClose={() => setShowBudget(false)} userId={userId} />
+                <BudgetManager
+                    isOpen={showBudget}
+                    onClose={() => setShowBudget(false)}
+                    userId={userId}
+                    onOpenCategories={() => { setShowBudget(false); setShowCategories(true); }}
+                />
 
             </div>
         </div>
